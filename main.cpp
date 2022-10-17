@@ -40,14 +40,6 @@ bool b_alloc_table_2dim(int ***piTable, int iSizeX, int iSizeY) {
     return true;
 }
 
-void allocate_array_data(int **piTable, int iSizeX, int iSizeY) {
-    for (int i = 0; i < iSizeX; i++) {
-        for (int j = 0; j < iSizeY; j++) {
-            piTable[i][j] = 5;
-        }
-    }
-}
-
 //zadnie 3
 bool b_dealloc_table_2_dim(int ***piTable, int iSizeX, int iSizeY) {
     if (iSizeY < 0){
@@ -100,7 +92,10 @@ public:
         s_name = pcOther.s_name + "_copy";
         tableSize = pcOther.tableSize;
         std::cout << "copy: " + s_name << std::endl;
-        array = pcOther.array;
+        array= new int[tableSize];
+        for (int i = 0; i < pcOther.tableSize; i++) {
+            array[i] = pcOther.array[i];
+        }
     }
 
     ~CTable() {
@@ -122,13 +117,23 @@ public:
             std::cout << "we did not changed array size, reason: negative num" << std::endl;
             return false;
         }
-        array = new int[iTableLen];
         tableSize = iTableLen;
+        int *newArr = new int[tableSize];
+        if(tableSize <= iTableLen){
+            for (int i = 0; i < tableSize; i++) {
+                newArr[i] = array[i];
+            }
+        }else{
+            for (int i = 0; i < iTableLen; i++) {
+                newArr[i] = array[i];
+            }
+        }
         std::cout << "we changed array size bSetNewSize" << std::endl;
         return true;
     }
 
     CTable *pcClone() {
+        //or use new CTable(*this);
         CTable *clone;
         clone = new CTable(s_name, tableSize);
         return clone;
@@ -137,6 +142,7 @@ public:
     std::string printTableSize() {
         std::cout << "table size = "<< tableSize << std::endl;
     }
+
 };
 
 std::string bool_to_string_converter(const bool b) {
@@ -157,14 +163,14 @@ int main() {
     std::cout << "\n" << std::endl;
 
     std::cout << "TASK 2" << std::endl;
-    int ***pi_table; //allocate_array_data(pi_table, I_SIZE_Y, I_SIZE_X);
-    bool alloc_result = b_alloc_table_2dim(pi_table, I_SIZE_Y, I_SIZE_X);
+    int **pi_table; //allocate_array_data(pi_table, I_SIZE_Y, I_SIZE_X);
+    bool alloc_result = b_alloc_table_2dim(&pi_table, I_SIZE_Y, I_SIZE_X);
     std::cout << "alloc result: " << std::endl;
     std::cout << bool_to_string_converter(alloc_result) << std::endl;
     std::cout << "\n" << std::endl;
 
     std::cout << "TASK 3" << std::endl;
-    bool dealloc_result = b_dealloc_table_2_dim(pi_table, I_SIZE_Y, I_SIZE_X);
+    bool dealloc_result = b_dealloc_table_2_dim(&pi_table, I_SIZE_Y, I_SIZE_X);
     std::cout << "dealloc result: " << std::endl;
     std::cout << bool_to_string_converter(dealloc_result) << std::endl;
     std::cout << "\n" << std::endl;
@@ -191,24 +197,31 @@ int main() {
     CTable *table1;
     table1 = new CTable();
     v_mod_tab(*table1, iNewSize); //nie zmodyfikuje, utworzy kopie obiektu
-    table1->printTableSize();
 
     std::cout << "procedura 2:" << std::endl;
     CTable *table2;
     table2 = new CTable();
     v_mod_tab(table2, iNewSize); //zmodyfikuje nie utowrzy kopii obiektu
-    table2->printTableSize();
+
+
 
     return 0;
 }
 
 
-
-
-
-//    CTable c_tab; //static allo statyczna wywoluje konstruktor i dekonstruktor
-//    CTable *pc_new_tab; // dynamic allo wywoluje konstruktor ale dekonstruktor wtedy gdy damy delete pc_new_tab;
-//    pc_new_tab = c_tab.pcClone();
-//    delete pc_new_tab;
+//void printArrayContent() {
+//        for (int i = 0; i < tableSize; i++) {
+//            std::cout << array[i]<< std::endl;
+//        }
+//
+//    }
+//
+//    void offSet(int offSet, int value) {
+//        array[offSet] = value;
+//    }
 //    std::cout << "\n" << std::endl;
-//    delete pc_new_tab;
+//    CTable table;
+//    table1->setValue(0,1);
+//    table1->setValue(1,2);
+//    table1->bSetNewSize(3);
+//    table1->printArrayContent();
